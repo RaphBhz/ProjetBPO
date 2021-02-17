@@ -2,12 +2,23 @@ package cartes;
 
 public class Base {
     private static final int MAX_BASE = 2;
-    private int[] base;
-
+    private Carte carteAscendante;
+    private Carte carteDescendante;
 
     public Base(){
-        this.base = new int[MAX_BASE];
-        this.base[0] = 1;
-        this.base[1] = 60;
+        this.carteAscendante = new Carte();
+        this.carteDescendante = new Carte();
+        this.carteAscendante.valeur = 1;
+        this.carteDescendante.valeur = 60;
+    }
+
+    public String toString(){
+        StringBuilder s = new StringBuilder();
+        s.append("^[");
+        s.append(this.carteAscendante.toString());
+        s.append("] v[");
+        s.append(this.carteDescendante.toString());
+        s.append("]");
+        return s.toString();
     }
 }

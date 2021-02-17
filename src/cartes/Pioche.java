@@ -5,19 +5,26 @@ import java.util.Stack;
 
 public class Pioche {
     private static final int MAX_PIOCHE = 60;
-    private Stack<Integer> pioche;
+    public Stack<Carte> cartesPioche;
 
 
     public Pioche(){
-        this.pioche = new Stack<Integer>();
+        this.cartesPioche = new Stack<>();
+
 
         for(int i = 2; i < MAX_PIOCHE; i++){
-            this.pioche.push(i);
+            Carte carte = new Carte();
+            carte.valeur = i;
+            this.cartesPioche.push(carte);
         }
-        Collections.shuffle(this.pioche);
+        Collections.shuffle(this.cartesPioche);
     }
 
     public boolean piocheVide(){
-        return this.pioche.empty();
+        return this.cartesPioche.empty();
+    }
+
+    public int nbCartes(){
+        return cartesPioche.size();
     }
 }

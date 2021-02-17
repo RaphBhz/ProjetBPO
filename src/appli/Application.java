@@ -9,9 +9,16 @@ public class Application {
 
         boolean continuerJeu = true;
 
-        while(continuerJeu){
+/*        while(continuerJeu){
             if(NORD.pioche.piocheVide() || SUD.pioche.piocheVide())
                 continuerJeu = false;
+
         }
+
+ */
+        System.out.println(NORD.toString());
+        System.out.println(SUD.toString());
+        System.out.println("cartes " + NORD.id + ' ' + NORD.main.toString());
+
     }
 }
