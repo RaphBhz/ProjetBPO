@@ -18,7 +18,7 @@ public class Partie {
         String[] tab;
         System.out.print("> ");
         s = sc.nextLine();
-        while (true) {
+        while (this.continuer(NORD, SUD)) {
             int count = s.length() - s.replace("'", "").length();
             if (!s.equals("") && count<=1) {
                 tab = decompose(s);
@@ -39,7 +39,7 @@ public class Partie {
     private boolean joueUnCoup(String[] tab) {
         int[] tabCarteAsc = new int[tab.length], tabCarteDesc = new int[tab.length];
         int i = 0, tailleCarteAsc = 0, tailleCarteDesc = 0, indexCoupSurEnnemi = -1;
-        boolean CoupEnnemiAsc;
+        boolean CoupEnnemiAsc = false;
         for (String mot : tab) {
 
             if (isMotAsc(mot)) {
@@ -72,12 +72,12 @@ public class Partie {
         int adversaire = tour%2;
         // tri croissant
         if (tabCarteAsc.length > 1)
-            if (!TriSaisieAsc(tabCarteAsc, indexCoupSurEnnemi))
+            if (!TriSaisie(tabCarteAsc, indexCoupSurEnnemi, true))
                 return false;
 
         // tri decroissant
         if (tabCarteDesc.length > 1)
-            if (!TriSaisieDesc(tabCarteDesc, indexCoupSurEnnemi))
+            if (!TriSaisie(tabCarteDesc, indexCoupSurEnnemi, false))
                 return false;
 
         if (indexCoupSurEnnemi != -1){
@@ -105,8 +105,10 @@ public class Partie {
             if (tabCarteDesc.length != 0)
                 return SUD.isCartePosable(tabCarteDesc[0], false);
         }
+        return true;
     }
 
+    /*
     private static boolean TriSaisieAsc(int[] tab, int indexCoupSurEnnemi){
         for (int i = 0; i<tab.length; i++){
             if (i == indexCoupSurEnnemi) continue;
@@ -125,6 +127,24 @@ public class Partie {
             for (int j = i+1; j<tab.length; j++){
                 if (j == indexCoupSurEnnemi) continue;
                 if (tab[i] < tab[j])
+                    return false;
+            }
+        }
+        return true;
+    }
+     */
+
+    private static boolean TriSaisie(int[] tab, int indexCoupSurEnnemi, boolean estAsc){
+        boolean expr;
+        for (int i = 0; i<tab.length; i++){
+            if (i == indexCoupSurEnnemi) continue;
+            for (int j = i+1; j<tab.length; j++){
+                if (j == indexCoupSurEnnemi) continue;
+                if(estAsc)
+                    expr = tab[j] < tab[i];
+                else
+                    expr = tab[i] < tab[j];
+                if (expr)
                     return false;
             }
         }
@@ -164,5 +184,9 @@ public class Partie {
         // une solution
         String[] tab = s.split("\\s+");
         return tab;
+    }
+
+    public boolean continuer(Joueur j1, Joueur j2){
+        return j1.peutJouer() && j2.peutJouer();
     }
 }

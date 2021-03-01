@@ -32,6 +32,10 @@ public class Joueur {
             return carte > base.getTopPileDesc() || carte-10 == base.getTopPileDesc();
     }
 
+    public boolean peutJouer(){
+        return this.pioche.piocheVide() && this.pioche.mainVide();
+    }
+
     @Override
     public String toString(){
         StringBuilder s = new StringBuilder();
