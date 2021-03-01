@@ -1,27 +1,44 @@
 package jeu;
 
-import cartes.Main;
+import cartes.Base;
+import cartes.Pioche;
 
 public class Joueur {
-    public String id;
-    public cartes.Base base;
-    public Main main;
-    public cartes.Pioche pioche;
+    private static int compteurJoueurs = 0;
+    private int id;
+    private Base base = new Base();
+    private Pioche pioche = new Pioche();
 
-    public Joueur(String id){
-        this.id = id;
-        this.base = new cartes.Base();
-        this.main = new cartes.Main();
-        this.pioche = new cartes.Pioche();
-        this.main.initialiser(this.pioche);
+    public Joueur(int id){
+        this.id = compteurJoueurs++;
     }
 
+    public boolean ajouterCarte(int carte, boolean pileAsc){
+        if (isCartePosable(carte, pileAsc)) {
+            if (pileAsc)
+                base.addCartePileAsc(carte);
+            else
+                base.addCartePileDesc(carte);
+            return true;
+        }
+        return false;
+
+    }
+
+    public boolean isCartePosable(int carte, boolean pileAsc){
+        if (pileAsc)
+            return carte > base.getTopPileAsc() || carte+10 == base.getTopPileAsc(); // Si la carte est sup au sommet de la carte de la pile asc ou si la carte est + petite de 10 que le sommet de la carte de la pile asc
+        else
+            return carte > base.getTopPileDesc() || carte-10 == base.getTopPileDesc();
+    }
+
+    @Override
     public String toString(){
         StringBuilder s = new StringBuilder();
         s.append(this.id);
         s.append(this.base.toString());
         s.append(" (m");
-        s.append(this.main.nbCartes());
+        s.append(this.pioche.nbCartes());
         s.append('p');
         s.append(this.pioche.nbCartes());
         s.append(")");
