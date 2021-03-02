@@ -3,12 +3,15 @@ package jeu;
 import java.util.Scanner;
 
 public class Partie {
-    private Joueur NORD = new Joueur(0);
-    private Joueur SUD = new Joueur(1);
+    private Joueur[] tabJoueur;
+    private static final int MAX_JOUEURS = 2;
     private int tour = 1;
 
 
     public Partie(){
+        tabJoueur = new Joueur[MAX_JOUEURS];
+        for (int i = 0; i < MAX_JOUEURS; i++)
+            tabJoueur[i] = new Joueur(i);
         Start();
     }
 
@@ -18,7 +21,7 @@ public class Partie {
         String[] tab;
         System.out.print("> ");
         s = sc.nextLine();
-        while (this.continuer(NORD, SUD)) {
+        while (this.continuer(tabJoueur[0], tabJoueur[1])) {
             int count = s.length() - s.replace("'", "").length();
             if (!s.equals("") && count<=1) {
                 tab = decompose(s);
@@ -70,41 +73,29 @@ public class Partie {
     private boolean IsSaisieJouable(int[] tabCarteAsc, int[] tabCarteDesc, int indexCoupSurEnnemi, boolean CoupEnnemiAsc){
 
         int adversaire = tour%2;
-        // tri croissant
-        if (tabCarteAsc.length > 1)
-            if (!TriSaisie(tabCarteAsc, indexCoupSurEnnemi, true))
-                return false;
 
-        // tri decroissant
-        if (tabCarteDesc.length > 1)
-            if (!TriSaisie(tabCarteDesc, indexCoupSurEnnemi, false))
-                return false;
+        if (!triSaisie(tabCarteAsc, indexCoupSurEnnemi, true) || !triSaisie(tabCarteDesc, indexCoupSurEnnemi, false))
+            return false;
 
         if (indexCoupSurEnnemi != -1){
-            if (adversaire == 0)
-                if (CoupEnnemiAsc) {
-                    if (!SUD.isCartePosable(tabCarteAsc[indexCoupSurEnnemi], true))
-                        return false;
+            if (CoupEnnemiAsc) {
+                if (!tabJoueur[adversaire].isCartePosable(tabCarteAsc[indexCoupSurEnnemi], true))
+                    return false;
 
-                }else{
-                    if (!SUD.isCartePosable(tabCarteDesc[indexCoupSurEnnemi], false))
-                        return false;
-                }
+            } else {
+                if (!tabJoueur[adversaire].isCartePosable(tabCarteDesc[indexCoupSurEnnemi], false))
+                    return false;
+            }
         }
 
 
         if (adversaire == 0) {
             if (tabCarteAsc.length != 0)
-                return NORD.isCartePosable(tabCarteAsc[0], true);
+                return tabJoueur[adversaire].isCartePosable(tabCarteAsc[0], true);
             if (tabCarteDesc.length != 0)
-                return NORD.isCartePosable(tabCarteDesc[0], false);
+                return tabJoueur[adversaire].isCartePosable(tabCarteDesc[0], false);
         }
-        else{
-            if (tabCarteAsc.length != 0)
-                return SUD.isCartePosable(tabCarteAsc[0], true);
-            if (tabCarteDesc.length != 0)
-                return SUD.isCartePosable(tabCarteDesc[0], false);
-        }
+
         return true;
     }
 
@@ -132,9 +123,9 @@ public class Partie {
         }
         return true;
     }
-     */
+    */
 
-    private static boolean TriSaisie(int[] tab, int indexCoupSurEnnemi, boolean estAsc){
+    private static boolean triSaisie(int[] tab, int indexCoupSurEnnemi, boolean estAsc){
         boolean expr;
         for (int i = 0; i<tab.length; i++){
             if (i == indexCoupSurEnnemi) continue;
