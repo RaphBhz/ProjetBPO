@@ -21,7 +21,7 @@ public class Partie {
         String[] tab;
         System.out.print("> ");
         s = sc.nextLine();
-        while (this.continuer(tabJoueur[0], tabJoueur[1])) {
+        while (this.continuer()) {
             int count = s.length() - s.replace("'", "").length();
             if (!s.equals("") && count<=1) {
                 tab = decompose(s);
@@ -142,7 +142,7 @@ public class Partie {
         return s.split("\\s+");
     }
 
-    public boolean continuer(Joueur j1, Joueur j2){
-        return j1.peutJouer() && j2.peutJouer();
+    public boolean continuer(){
+        return tabJoueur[0].peutJouer() && tabJoueur[1].peutJouer();
     }
 }
