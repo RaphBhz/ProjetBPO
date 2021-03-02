@@ -65,6 +65,7 @@ public class Partie {
 
         if (IsSaisieJouable(tabCarteAsc,tabCarteDesc, coupSurEnnemi, CoupEnnemiAsc)){
             // ajouterCarte
+            tour++;
             return true;
         }
         else
@@ -91,32 +92,6 @@ public class Partie {
 
         return true;
     }
-
-    /*
-    private static boolean TriSaisieAsc(int[] tab, int indexCoupSurEnnemi){
-        for (int i = 0; i<tab.length; i++){
-            if (i == indexCoupSurEnnemi) continue;
-            for (int j = i+1; j<tab.length; j++){
-                if (j == indexCoupSurEnnemi) continue;
-                if (tab[j] < tab[i])
-                    return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean TriSaisieDesc(int[] tab, int indexCoupSurEnnemi){
-        for (int i = 0; i<tab.length; i++){
-            if (i == indexCoupSurEnnemi) continue;
-            for (int j = i+1; j<tab.length; j++){
-                if (j == indexCoupSurEnnemi) continue;
-                if (tab[i] < tab[j])
-                    return false;
-            }
-        }
-        return true;
-    }
-    */
 
     private static boolean triSaisie(int[] tab, boolean estAsc){
         boolean expr;
@@ -164,8 +139,7 @@ public class Partie {
 
     private static String[] decompose(String s) {
         // une solution
-        String[] tab = s.split("\\s+");
-        return tab;
+        return s.split("\\s+");
     }
 
     public boolean continuer(Joueur j1, Joueur j2){
