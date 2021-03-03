@@ -1,13 +1,13 @@
 package jeu;
 
 import cartes.Base;
-import cartes.Pioche;
+import cartes.Cartes;
 
 public class Joueur {
     private static int compteurJoueurs = 0;
     private int id;
     private Base base = new Base();
-    private Pioche pioche = new Pioche();
+    private Cartes cartes = new Cartes();
 
     public Joueur(int id){
         this.id = compteurJoueurs++;
@@ -33,19 +33,26 @@ public class Joueur {
     }
 
     public boolean peutJouer(){
-        return this.pioche.piocheVide() && this.pioche.mainVide();
+        return !(this.cartes.piocheVide() && this.cartes.mainVide());
     }
 
     @Override
     public String toString(){
         StringBuilder s = new StringBuilder();
-        s.append(this.id);
         s.append(this.base.toString());
         s.append(" (m");
-        s.append(this.pioche.nbCartes());
+        s.append(this.cartes.nbCartesMain());
         s.append('p');
-        s.append(this.pioche.nbCartes());
+        s.append(this.cartes.nbCartes());
         s.append(")");
+        return s.toString();
+    }
+
+    public String afficheMain(){
+        StringBuilder s = new StringBuilder();
+        s.append("{ ");
+        s.append(this.cartes.afficheMain());
+        s.append("}");
         return s.toString();
     }
 }

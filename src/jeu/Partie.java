@@ -1,5 +1,6 @@
 package jeu;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Partie {
@@ -19,6 +20,7 @@ public class Partie {
         Scanner sc = new Scanner(System.in);
         String s;
         String[] tab;
+        System.out.println(affiche());
         System.out.print("> ");
         s = sc.nextLine();
         while (this.continuer()) {
@@ -30,6 +32,7 @@ public class Partie {
                 if (checkFormatConditions(tab))
                     joueUnCoup(tab); //
 
+                System.out.println(affiche());
                 System.out.print("> ");
             }
             else
@@ -39,6 +42,7 @@ public class Partie {
         }
     }
 
+    /*
     private boolean joueUnCoup(String[] tab) {
         int[] tabCarteAsc = new int[tab.length], tabCarteDesc = new int[tab.length];
         int tailleCarteAsc = 0, tailleCarteDesc = 0, coupSurEnnemi = -1;
@@ -71,6 +75,45 @@ public class Partie {
         else
             return false;
     }
+     */
+
+    private boolean joueUnCoup(String[] tab) {
+        int[] tabCarteAsc = new int[tab.length], tabCarteDesc = new int[tab.length];
+        int tailleCarteAsc = 0, tailleCarteDesc = 0, coupPlayed = -1;
+        boolean coupEnnemi = false;
+        for (String mot : tab) {
+
+            if (isMotAsc(mot)) {
+                if(jouerSurAdversaire(mot)){
+                    coupPlayed = getCarteValue(mot);
+                    coupEnnemi = true;
+                    continue;
+                }
+                tabCarteAsc[tailleCarteAsc++] = getCarteValue(mot);
+            }
+            else {
+                if(jouerSurAdversaire(mot)){
+                    coupPlayed = getCarteValue(mot);
+                    coupEnnemi = false;
+                    continue;
+                }
+                tabCarteDesc[tailleCarteDesc++] = getCarteValue(mot);
+            }
+        }
+
+        if (IsSaisieJouable(tabCarteAsc,tabCarteDesc, coupPlayed, coupEnnemi)){
+            // ajouterCarte
+            System.out.println(Arrays.stream(tabCarteAsc).max().getAsInt());
+            tabJoueur[this.tour % 2].ajouterCarte(Arrays.stream(tabCarteAsc).max().getAsInt(), true);
+            System.out.println(Arrays.stream(tabCarteDesc).min().getAsInt());
+            tabJoueur[this.tour % 2].ajouterCarte(Arrays.stream(tabCarteDesc).min().getAsInt(), false);
+            this.tour++;
+            return true;
+        }
+        else
+            System.out.println("Saisie nou jouable");
+            return false;
+    }
 
     private boolean IsSaisieJouable(int[] tabCarteAsc, int[] tabCarteDesc, int coupEnnemi, boolean CoupEnnemiAsc){
 
@@ -83,7 +126,6 @@ public class Partie {
             if (!tabJoueur[adversaire+1].isCartePosable(coupEnnemi, CoupEnnemiAsc))
                 return false;
         }
-
 
         if (tabCarteAsc.length != 0)
             return tabJoueur[adversaire].isCartePosable(tabCarteAsc[0], true);
@@ -144,5 +186,24 @@ public class Partie {
 
     public boolean continuer(){
         return tabJoueur[0].peutJouer() && tabJoueur[1].peutJouer();
+    }
+
+    public String affiche(){
+        StringBuilder s = new StringBuilder();
+        s.append("NORD ");
+        s.append(tabJoueur[0].toString());
+        s.append("\n");
+        s.append("SUD ");
+        s.append(tabJoueur[1].toString());
+        s.append("\ncartes ");
+        if(this.tour % 2 == 0){
+            s.append("NORD ");
+            s.append(tabJoueur[0].afficheMain());
+        }
+        else{
+            s.append("SUD ");
+            s.append(tabJoueur[1].afficheMain());
+        }
+        return s.toString();
     }
 }

@@ -4,37 +4,32 @@ import java.util.Stack;
 
 public class Base {
     private static final int MAX_BASE = 2;
-    private Stack<Integer> pileAscendante = new Stack<Integer>();
-    private Stack<Integer> pileDescendante = new Stack<Integer>();
+    private int carteAscendante;
+    private int carteDescendante;
 
     public Base(){
-        this.pileAscendante.push(1);
-        this.pileDescendante.push(60);
+        this.carteAscendante = 1;
+        this.carteDescendante = 60;
     }
 
     public int getTopPileAsc(){
-        return pileAscendante.peek();
+        return this.carteAscendante;
     }
 
     public int getTopPileDesc(){
-        return pileDescendante.peek();
+        return this.carteDescendante;
     }
 
-    public void addCartePileDesc(int carte){
-        pileDescendante.push(carte);
-    }
+    public void addCartePileDesc(int carte){this.carteDescendante = carte;}
 
-    public void addCartePileAsc(int carte){
-        pileAscendante.push(carte);
-    }
-
+    public void addCartePileAsc(int carte){this.carteAscendante = carte;}
 
     public String toString(){
         StringBuilder s = new StringBuilder();
         s.append("^[");
-        //s.append(this.carteAscendante.toString());
+        s.append(this.carteAscendante);
         s.append("] v[");
-        //s.append(this.carteDescendante.toString());
+        s.append(this.carteDescendante);
         s.append("]");
         return s.toString();
     }
