@@ -3,6 +3,8 @@ package jeu;
 import cartes.Base;
 import cartes.Cartes;
 
+import java.util.ArrayList;
+
 public class Joueur {
     private static int compteurJoueurs = 0;
     private int id;
@@ -13,16 +15,12 @@ public class Joueur {
         this.id = compteurJoueurs++;
     }
 
-    public boolean ajouterCarte(int carte, boolean pileAsc){
-        if (isCartePosable(carte, pileAsc)) {
-            if (pileAsc)
-                base.addCartePileAsc(carte);
-            else
-                base.addCartePileDesc(carte);
-            return true;
-        }
-        return false;
-
+    public void ajouterCarteBase(int carte, boolean pileAsc){
+        if (pileAsc)
+            base.addCartePileAsc(carte);
+        else
+            base.addCartePileDesc(carte);
+        return;
     }
 
     public boolean isCartePosable(int carte, boolean pileAsc){
@@ -48,11 +46,20 @@ public class Joueur {
         return s.toString();
     }
 
+    public int nbCartesMain(){
+        return this.cartes.nbCartesMain();
+    }
+
     public String afficheMain(){
         StringBuilder s = new StringBuilder();
         s.append("{ ");
         s.append(this.cartes.afficheMain());
         s.append("}");
         return s.toString();
+    }
+
+    public void piocher(int numCarte){
+        this.cartes.piocher(numCarte);
+        return;
     }
 }

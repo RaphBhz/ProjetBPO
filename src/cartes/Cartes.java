@@ -1,5 +1,7 @@
 package cartes;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Stack;
 
@@ -38,6 +40,13 @@ public class Cartes {
 
     public int pickCarte(){
         return cartesPioche.pop();
+    }
+
+    public void piocher(int numCarte){
+        if(this.cartesEnMain.length == 6)
+            return;
+        this.cartesEnMain[Arrays.asList(cartesEnMain).indexOf(numCarte)] = this.pickCarte();
+        return;
     }
 
     public boolean piocheVide(){

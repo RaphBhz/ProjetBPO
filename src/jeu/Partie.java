@@ -1,12 +1,12 @@
 package jeu;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Partie {
     private Joueur[] tabJoueur;
     private static final int MAX_JOUEURS = 2;
-    private int tour = 1;
+    private int tour = 0;
 
 
     public Partie(){
@@ -27,13 +27,13 @@ public class Partie {
             int count = s.length() - s.replace("'", "").length();
             if (!s.equals("") && count<=1) {
                 tab = decompose(s);
-                if (tab.length < 2)
-                    // erreur car on doit mettre 2 cartes minimum
-                if (checkFormatConditions(tab))
-                    joueUnCoup(tab); //
-
-                System.out.println(affiche());
-                System.out.print("> ");
+                if (checkFormatConditions(tab)) {
+                    joueUnCoup(tab);
+                    System.out.println(affiche());
+                    System.out.print("> ");
+                }
+                else
+                    System.out.print("#> ");
             }
             else
                 System.out.print("#> ");
@@ -78,75 +78,132 @@ public class Partie {
      */
 
     private boolean joueUnCoup(String[] tab) {
-        int[] tabCarteAsc = new int[tab.length], tabCarteDesc = new int[tab.length];
-        int tailleCarteAsc = 0, tailleCarteDesc = 0, coupPlayed = -1;
+        ArrayList<Integer> tabCarteAsc = new ArrayList<>(), tabCarteDesc = new ArrayList<>();
+        int carteSurEnnemi = -1;
         boolean coupEnnemi = false;
         for (String mot : tab) {
 
             if (isMotAsc(mot)) {
                 if(jouerSurAdversaire(mot)){
-                    coupPlayed = getCarteValue(mot);
+                    carteSurEnnemi = getCarteValue(mot);
                     coupEnnemi = true;
                     continue;
                 }
-                tabCarteAsc[tailleCarteAsc++] = getCarteValue(mot);
+                tabCarteAsc.add(getCarteValue(mot));
             }
             else {
                 if(jouerSurAdversaire(mot)){
-                    coupPlayed = getCarteValue(mot);
+                    carteSurEnnemi = getCarteValue(mot);
                     coupEnnemi = false;
                     continue;
                 }
-                tabCarteDesc[tailleCarteDesc++] = getCarteValue(mot);
+                tabCarteDesc.add(getCarteValue(mot));
             }
         }
 
-        if (IsSaisieJouable(tabCarteAsc,tabCarteDesc, coupPlayed, coupEnnemi)){
+        if (IsSaisieJouable(tabCarteAsc,tabCarteDesc, carteSurEnnemi, coupEnnemi)){
             // ajouterCarte
-            System.out.println(Arrays.stream(tabCarteAsc).max().getAsInt());
-            tabJoueur[this.tour % 2].ajouterCarte(Arrays.stream(tabCarteAsc).max().getAsInt(), true);
-            System.out.println(Arrays.stream(tabCarteDesc).min().getAsInt());
-            tabJoueur[this.tour % 2].ajouterCarte(Arrays.stream(tabCarteDesc).min().getAsInt(), false);
+            if(!tabCarteAsc.isEmpty())
+                tabJoueur[this.tour % 2].ajouterCarteBase(tabCarteAsc.get(tabCarteAsc.size() - 1), true);
+            if(!tabCarteDesc.isEmpty())
+                tabJoueur[this.tour % 2].ajouterCarteBase(tabCarteDesc.get(tabCarteDesc.size() - 1), false);
+            // IL FAUT ENLEVER LES CARTES QUI ONT ETE JOUEES DE LA MAIN DU JOUEUR
+            if(coupEnnemi){
+                int i =0;
+               while(tabJoueur[this.tour % 2].nbCartesMain() != 6){
+                   boolean exp1 = i<tabCarteAsc.size(), exp2 = i<tabCarteDesc.size();
+                   if(exp1) tabJoueur[this.tour % 2].piocher(tabCarteAsc.get(i));
+                   if(exp2) tabJoueur[this.tour % 2].piocher(tabCarteDesc.get(i));
+                   if(!(exp1 && exp2)) tabJoueur[this.tour % 2].piocher(-1);
+                   i++;
+               }
+            }
+            else{
+                int i = 0, compteur = 0;
+                while(compteur != 2){
+                    if(!tabCarteAsc.isEmpty()) {
+                        tabJoueur[this.tour % 2].piocher(tabCarteAsc.get(i));
+                        compteur++;
+                    }
+                    if(!tabCarteAsc.isEmpty()) {
+                        tabJoueur[this.tour % 2].piocher(tabCarteDesc.get(i));
+                        compteur++;
+                    }
+                    i++;
+
+                }
+            }
             this.tour++;
             return true;
         }
         else
-            System.out.println("Saisie nou jouable");
+           //  System.out.println("Saisie non jouable");
             return false;
     }
 
-    private boolean IsSaisieJouable(int[] tabCarteAsc, int[] tabCarteDesc, int coupEnnemi, boolean CoupEnnemiAsc){
-
+    private boolean IsSaisieJouable(ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc, int coupEnnemi, boolean CoupEnnemiAsc){
         int adversaire = tour%2;
 
-        if (!triSaisie(tabCarteAsc, true) || !triSaisie(tabCarteDesc, false))
+        if (!triSaisie(tabCarteAsc, true) || !triSaisie(tabCarteDesc, false)){
+          //  System.out.println("ERREUR1");
             return false;
-
-        if (coupEnnemi != -1){
-            if (!tabJoueur[adversaire+1].isCartePosable(coupEnnemi, CoupEnnemiAsc))
-                return false;
         }
 
-        if (tabCarteAsc.length != 0)
-            return tabJoueur[adversaire].isCartePosable(tabCarteAsc[0], true);
-        if (tabCarteDesc.length != 0)
-            return tabJoueur[adversaire].isCartePosable(tabCarteDesc[0], false);
+        if (coupEnnemi != -1){
+            if (!tabJoueur[adversaire+1].isCartePosable(coupEnnemi, CoupEnnemiAsc)){
+                // System.out.println("ERREUR2");
+                return false;
+            }
+        }
+
+        if (tabCarteAsc.size() != 0){
+           // System.out.println("ERREUR3");
+            return tabJoueur[adversaire].isCartePosable(tabCarteAsc.get(0), true);
+        }
+        if (tabCarteDesc.size() != 0){
+           // System.out.println("ERREUR4");
+            return tabJoueur[adversaire].isCartePosable(tabCarteDesc.get(0), false);
+
+        }
 
         return true;
     }
 
-    private static boolean triSaisie(int[] tab, boolean estAsc){
+/*    private static boolean triSaisie(ArrayList<Integer> tab, boolean estAsc){
         boolean expr;
-        for (int i = 0; i<tab.length; i++){
-            for (int j = i+1; j<tab.length; j++){
+        for(int num : tab)
+            System.out.println(num);
+        for (int i = 0; i<tab.size(); i++){
+            for (int j = i+1; j<tab.size(); j++){
+                System.out.println("COMP : " + tab.get(i)+ " et " + tab.get(j));
                 if(estAsc)
-                    expr = tab[j] < tab[i];
+                    expr = tab.get(j) > tab.get(i);
                 else
-                    expr = tab[i] < tab[j];
-                if (expr)
+                    expr = tab.get(i) > tab.get(j);
+                if (!expr)
                     return false;
             }
         }
+        return true;
+    }*/
+
+    private static boolean triSaisie(ArrayList<Integer> tab, boolean estAsc){
+        boolean expr;
+        if(tab.size()==1)
+            return true;
+       /* for(int num : tab)
+            System.out.println(num);*/
+        for (int i = 0; i<tab.size() - 1; i++){
+            int j = i+1;
+              //  System.out.println("COMP : " + tab.get(i)+ " et " + tab.get(j) + "estAsc = " + estAsc);
+                if(estAsc)
+                    expr = tab.get(j) > tab.get(i);
+                else
+                    expr = tab.get(i) > tab.get(j);
+                if (!expr)
+                    return false;
+                j++;
+            }
         return true;
     }
 
@@ -160,20 +217,21 @@ public class Partie {
     }
 
     private static boolean isMotAsc(String mot){
-        return mot.indexOf("^") == 1;
+        return mot.contains("^");
     }
 
     private static boolean checkFormatConditions(String[] tab){
         for (String mot : tab) {
-            if (!checkCommenceParNb(mot))
+           // System.out.println("MOT :" + mot);
+            if (!(mot.matches("[0-9]?[0-9][v^]’?")))
                 return false;
         }
         return true;
     }
 
-    private static boolean checkCommenceParNb(String mot){
+    /*private static boolean checkCommenceParNb(String mot){
         return Character.isDigit(mot.charAt(0));
-    }
+    }*/
 
     private static boolean jouerSurAdversaire(String mot){
         return mot.contains("'");
