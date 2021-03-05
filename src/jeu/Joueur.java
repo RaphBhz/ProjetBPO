@@ -20,7 +20,6 @@ public class Joueur {
             base.addCartePileAsc(carte);
         else
             base.addCartePileDesc(carte);
-        return;
     }
 
     public boolean isCartePosable(int carte, boolean pileAsc){
@@ -60,6 +59,23 @@ public class Joueur {
 
     public void piocher(int numCarte){
         this.cartes.piocher(numCarte);
-        return;
+    }
+
+    public boolean areCartesInMain(ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc, int coupEnnemi){
+        tabCarteAsc.addAll(tabCarteDesc);
+        if (coupEnnemi != -1)
+            tabCarteAsc.add(coupEnnemi);
+        for (Integer value : tabCarteAsc){
+            if (!cartes.isCarteInMain(value))
+                return false;
+        }
+        return true;
+
+    }
+
+    public void removeCartesAndAddCartes(ArrayList<Integer> tabCarteDesc, ArrayList<Integer> tabCarteAsc, int carteSurEnnemi) {
+
+        cartes.removeCartes(tabCarteAsc, tabCarteDesc, carteSurEnnemi);
+        cartes.addCartes(carteSurEnnemi);
     }
 }

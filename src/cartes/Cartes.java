@@ -46,7 +46,44 @@ public class Cartes {
         if(this.cartesEnMain.length == 6)
             return;
         this.cartesEnMain[Arrays.asList(cartesEnMain).indexOf(numCarte)] = this.pickCarte();
-        return;
+    }
+
+    public boolean isCarteInMain(int carte){
+        for (int value : cartesEnMain){
+            if (value == carte)
+                return true;
+        }
+        return false;
+    }
+
+    public void removeCartes(ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc, int carteSurEnnemi){
+
+        tabCarteAsc.addAll(tabCarteDesc);
+        if (carteSurEnnemi != -1)
+            tabCarteAsc.add(carteSurEnnemi);
+
+        for (int i = 0; i<MAX_MAIN; i++){
+
+            for (Integer integer : tabCarteAsc)
+                if (integer == cartesEnMain[i]) {
+                    cartesEnMain[i] = -1;
+                    break;
+                }
+
+        }
+    }
+
+    public void addCartes(int carteSurEnnemi){
+        int nbCartesAdded = 0;
+        for (int i = 0; i<MAX_MAIN; i++){
+            if (cartesEnMain[i] == -1){
+                cartesEnMain[i] = pickCarte();
+                nbCartesAdded+=1;
+            }
+            if (carteSurEnnemi == -1 && nbCartesAdded == 2)
+                break;
+
+        }
     }
 
     public boolean piocheVide(){

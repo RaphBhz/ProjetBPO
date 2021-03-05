@@ -108,15 +108,16 @@ public class Partie {
             if(!tabCarteDesc.isEmpty())
                 tabJoueur[this.tour % 2].ajouterCarteBase(tabCarteDesc.get(tabCarteDesc.size() - 1), false);
             // IL FAUT ENLEVER LES CARTES QUI ONT ETE JOUEES DE LA MAIN DU JOUEUR
+            tabJoueur[tour%2].removeCartesAndAddCartes(tabCarteDesc, tabCarteAsc, carteSurEnnemi);
             if(coupEnnemi){
                 int i =0;
-               while(tabJoueur[this.tour % 2].nbCartesMain() != 6){
-                   boolean exp1 = i<tabCarteAsc.size(), exp2 = i<tabCarteDesc.size();
-                   if(exp1) tabJoueur[this.tour % 2].piocher(tabCarteAsc.get(i));
-                   if(exp2) tabJoueur[this.tour % 2].piocher(tabCarteDesc.get(i));
-                   if(!(exp1 && exp2)) tabJoueur[this.tour % 2].piocher(-1);
-                   i++;
-               }
+                while(tabJoueur[this.tour % 2].nbCartesMain() != 6){
+                    boolean exp1 = i<tabCarteAsc.size(), exp2 = i<tabCarteDesc.size();
+                    if(exp1) tabJoueur[this.tour % 2].piocher(tabCarteAsc.get(i));
+                    if(exp2) tabJoueur[this.tour % 2].piocher(tabCarteDesc.get(i));
+                    if(!(exp1 && exp2)) tabJoueur[this.tour % 2].piocher(-1);
+                    i++;
+                }
             }
             else{
                 int i = 0, compteur = 0;
@@ -125,7 +126,7 @@ public class Partie {
                         tabJoueur[this.tour % 2].piocher(tabCarteAsc.get(i));
                         compteur++;
                     }
-                    if(!tabCarteAsc.isEmpty()) {
+                    if(!tabCarteDesc.isEmpty()) {
                         tabJoueur[this.tour % 2].piocher(tabCarteDesc.get(i));
                         compteur++;
                     }
@@ -144,26 +145,36 @@ public class Partie {
     private boolean IsSaisieJouable(ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc, int coupEnnemi, boolean CoupEnnemiAsc){
         int adversaire = tour%2;
 
+        if (!tabJoueur[adversaire].areCartesInMain(tabCarteAsc, tabCarteDesc, coupEnnemi)) {
+            System.out.println("ERREUR 5: Les cartes ne sont pas dans ta main");
+            return false;
+        }
+
         if (!triSaisie(tabCarteAsc, true) || !triSaisie(tabCarteDesc, false)){
-          //  System.out.println("ERREUR1");
+            System.out.println("ERREUR 1: Input non trié");
             return false;
         }
 
         if (coupEnnemi != -1){
             if (!tabJoueur[adversaire+1].isCartePosable(coupEnnemi, CoupEnnemiAsc)){
-                // System.out.println("ERREUR2");
+                System.out.println("ERREUR 2: Coup adversaire non posable");
                 return false;
             }
         }
 
         if (tabCarteAsc.size() != 0){
            // System.out.println("ERREUR3");
-            return tabJoueur[adversaire].isCartePosable(tabCarteAsc.get(0), true);
+            if (!tabJoueur[adversaire].isCartePosable(tabCarteAsc.get(0), true)){
+                System.out.println("ERREUR 3: Coup ascendant non posable");
+                return false;
+            }
         }
         if (tabCarteDesc.size() != 0){
            // System.out.println("ERREUR4");
-            return tabJoueur[adversaire].isCartePosable(tabCarteDesc.get(0), false);
-
+            if (!tabJoueur[adversaire].isCartePosable(tabCarteDesc.get(0), false)){
+                System.out.println("ERREUR 4: Coup descendant non posable");
+                return false;
+            }
         }
 
         return true;
