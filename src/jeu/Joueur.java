@@ -26,7 +26,7 @@ public class Joueur {
         if (pileAsc)
             return carte > base.getTopPileAsc() || carte+10 == base.getTopPileAsc(); // Si la carte est sup au sommet de la carte de la pile asc ou si la carte est + petite de 10 que le sommet de la carte de la pile asc
         else
-            return carte > base.getTopPileDesc() || carte-10 == base.getTopPileDesc();
+            return carte < base.getTopPileDesc() || carte-10 == base.getTopPileDesc();
     }
 
     public boolean peutJouer(){
@@ -62,10 +62,11 @@ public class Joueur {
     }
 
     public boolean areCartesInMain(ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc, int coupEnnemi){
-        tabCarteAsc.addAll(tabCarteDesc);
+        ArrayList<Integer> tabCarteTemp = new ArrayList<>(tabCarteAsc);
+        tabCarteTemp.addAll(tabCarteDesc);
         if (coupEnnemi != -1)
             tabCarteAsc.add(coupEnnemi);
-        for (Integer value : tabCarteAsc){
+        for (Integer value : tabCarteTemp){
             if (!cartes.isCarteInMain(value))
                 return false;
         }

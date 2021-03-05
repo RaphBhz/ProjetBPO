@@ -202,11 +202,11 @@ public class Partie {
         boolean expr;
         if(tab.size()==1)
             return true;
-       /* for(int num : tab)
-            System.out.println(num);*/
+        for(int num : tab)
+            System.out.println("TAB = " + num + "\n");
         for (int i = 0; i<tab.size() - 1; i++){
             int j = i+1;
-              //  System.out.println("COMP : " + tab.get(i)+ " et " + tab.get(j) + "estAsc = " + estAsc);
+                System.out.println("COMP : " + tab.get(i)+ " et " + tab.get(j) + " estAsc = " + estAsc);
                 if(estAsc)
                     expr = tab.get(j) > tab.get(i);
                 else
