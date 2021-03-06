@@ -65,7 +65,7 @@ public class Joueur {
         ArrayList<Integer> tabCarteTemp = new ArrayList<>(tabCarteAsc);
         tabCarteTemp.addAll(tabCarteDesc);
         if (coupEnnemi != -1)
-            tabCarteAsc.add(coupEnnemi);
+            tabCarteTemp.add(coupEnnemi);
         for (Integer value : tabCarteTemp){
             if (!cartes.isCarteInMain(value))
                 return false;

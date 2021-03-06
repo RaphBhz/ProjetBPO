@@ -24,7 +24,7 @@ public class Partie {
         System.out.print("> ");
         s = sc.nextLine();
         while (this.continuer()) {
-            int count = s.length() - s.replace("'", "").length();
+            int count = s.length() - s.replace("’", "").length();
             if (!s.equals("") && count<=1) {
                 tab = decompose(s);
                 if (checkFormatConditions(tab)) {
@@ -80,34 +80,46 @@ public class Partie {
     private boolean joueUnCoup(String[] tab) {
         ArrayList<Integer> tabCarteAsc = new ArrayList<>(), tabCarteDesc = new ArrayList<>();
         int carteSurEnnemi = -1;
-        boolean coupEnnemi = false;
+        boolean coupEnnemi = false, coupEnnemiAsc = false;
         for (String mot : tab) {
 
             if (isMotAsc(mot)) {
                 if(jouerSurAdversaire(mot)){
+                    System.out.println("TEST ENNEMI 2 ASC");
                     carteSurEnnemi = getCarteValue(mot);
+                    coupEnnemiAsc = true;
                     coupEnnemi = true;
                     continue;
                 }
+                System.out.println("TEST CONTINUE " + getCarteValue(mot));
                 tabCarteAsc.add(getCarteValue(mot));
             }
             else {
                 if(jouerSurAdversaire(mot)){
+                    System.out.println("TEST ENNEMI 2 DESC");
                     carteSurEnnemi = getCarteValue(mot);
-                    coupEnnemi = false;
+                    coupEnnemiAsc = false;
+                    coupEnnemi = true;
                     continue;
                 }
+                System.out.println("TEST CONTINUE " + getCarteValue(mot));
                 tabCarteDesc.add(getCarteValue(mot));
             }
         }
 
         if (IsSaisieJouable(tabCarteAsc,tabCarteDesc, carteSurEnnemi, coupEnnemi)){
             // ajouterCarte
+            if(coupEnnemi){
+                System.out.println("TEST ENNEMI");
+                if(coupEnnemiAsc)
+                    tabJoueur[(this.tour + 1) % 2 ].ajouterCarteBase(carteSurEnnemi, true);
+                else
+                    tabJoueur[(this.tour + 1) % 2 ].ajouterCarteBase(carteSurEnnemi, false);
+            }
             if(!tabCarteAsc.isEmpty())
                 tabJoueur[this.tour % 2].ajouterCarteBase(tabCarteAsc.get(tabCarteAsc.size() - 1), true);
             if(!tabCarteDesc.isEmpty())
                 tabJoueur[this.tour % 2].ajouterCarteBase(tabCarteDesc.get(tabCarteDesc.size() - 1), false);
-            // IL FAUT ENLEVER LES CARTES QUI ONT ETE JOUEES DE LA MAIN DU JOUEUR
             tabJoueur[tour%2].removeCartesAndAddCartes(tabCarteDesc, tabCarteAsc, carteSurEnnemi);
             if(coupEnnemi){
                 int i =0;
@@ -156,7 +168,7 @@ public class Partie {
         }
 
         if (coupEnnemi != -1){
-            if (!tabJoueur[adversaire+1].isCartePosable(coupEnnemi, CoupEnnemiAsc)){
+            if (!tabJoueur[(this.tour + 1) % 2 ].isCartePosable(coupEnnemi, CoupEnnemiAsc)){
                 System.out.println("ERREUR 2: Coup adversaire non posable");
                 return false;
             }
@@ -202,15 +214,15 @@ public class Partie {
         boolean expr;
         if(tab.size()==1)
             return true;
-        for(int num : tab)
-            System.out.println("TAB = " + num + "\n");
+        /*for(int num : tab)
+            System.out.println("TAB = " + num + "\n");*/
         for (int i = 0; i<tab.size() - 1; i++){
             int j = i+1;
-                System.out.println("COMP : " + tab.get(i)+ " et " + tab.get(j) + " estAsc = " + estAsc);
+//                System.out.println("COMP : " + tab.get(i)+ " et " + tab.get(j) + " estAsc = " + estAsc);
                 if(estAsc)
-                    expr = tab.get(j) > tab.get(i);
+                    expr = tab.get(j) > tab.get(i) || tab.get(j)-10 == tab.get(i);
                 else
-                    expr = tab.get(i) > tab.get(j);
+                    expr = tab.get(i) > tab.get(j) || tab.get(j)+10 == tab.get(i);
                 if (!expr)
                     return false;
                 j++;
@@ -245,7 +257,7 @@ public class Partie {
     }*/
 
     private static boolean jouerSurAdversaire(String mot){
-        return mot.contains("'");
+        return mot.contains("’");
     }
 
     private static String[] decompose(String s) {
