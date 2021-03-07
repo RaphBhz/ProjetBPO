@@ -27,6 +27,7 @@ public class Cartes {
     private void addAllCartesToPioche(){
         for(int i = 0; i < MAX_PIOCHE; i++){
             cartesPioche.push(i+2);
+
         }
     }
 
