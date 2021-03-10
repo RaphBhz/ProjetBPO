@@ -77,6 +77,9 @@ public class Cartes {
     public void addCartes(int carteSurEnnemi){
         int nbCartesAdded = 0;
         for (int i = 0; i<MAX_MAIN; i++){
+            if (cartesPioche.size() == 0)
+                break;
+
             if (cartesEnMain[i] == -1){
                 cartesEnMain[i] = pickCarte();
                 nbCartesAdded+=1;
@@ -89,6 +92,10 @@ public class Cartes {
 
     public boolean piocheVide(){
         return this.cartesPioche.empty();
+    }
+
+    public boolean oneCarteInHandAndZeroInPioche(){
+        return cartesPioche.size() == 0 && cartesEnMain.length <2;
     }
 
     public int nbCartes(){
