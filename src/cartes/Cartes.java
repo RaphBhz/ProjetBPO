@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Stack;
 
 public class Cartes {
-    private static final int MAX_PIOCHE = 58;
+    private static final int MAX_PIOCHE = 10;
     private Stack<Integer> cartesPioche = new Stack<Integer>();
     private static final int MAX_MAIN = 6;
     private int[] cartesEnMain =  new int[MAX_MAIN];
@@ -31,12 +31,13 @@ public class Cartes {
         }
     }
 
-    public boolean mainVide(){
+    public int mainVide(){
+        int cpt = 0;
         for(int i = 0; i < MAX_MAIN; i++){
             if(cartesEnMain[i] != -1)
-                return false;
+                cpt++;
         }
-        return true;
+        return cpt;
     }
 
     public int pickCarte(){
@@ -95,7 +96,7 @@ public class Cartes {
     }
 
     public boolean oneCarteInHandAndZeroInPioche(){
-        return cartesPioche.size() == 0 && cartesEnMain.length <2;
+        return cartesPioche.size() == 0 && mainVide() <2;
     }
 
     public int nbCartes(){

@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Partie {
-    private Joueur[] tabJoueur;
+    private Joueur[] tabJoueur = new Joueur[MAX_JOUEURS];
     private static final int MAX_JOUEURS = 2;
     private int tour = 0;
 
 
     public Partie(){
-        tabJoueur = new Joueur[MAX_JOUEURS];
         for (int i = 0; i < MAX_JOUEURS; i++)
             tabJoueur[i] = new Joueur(i);
         Start();
@@ -41,12 +40,12 @@ public class Partie {
                     }
                 }
                 else {
-                    System.out.println("~r~ERREUR 7: checkFormatConditions(tab) && tab.length >= 2 car " + tab.length);
+                    System.out.println("ERREUR 7: checkFormatConditions(tab) && tab.length >= 2 car " + tab.length);
                     System.out.print("#> ");
                 }
             }
             else {
-                System.out.println("~r~ERREUR 8: !s.equals(\"\") && count<=1");
+                System.out.println("ERREUR 8: !s.equals(\"\") && count<=1");
                 System.out.print("#> ");
             }
 
@@ -54,8 +53,41 @@ public class Partie {
         }
     }
 
-    /*
-    private void getCartes(String[] tab, ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc, int carteSurEnnemi, boolean coupEnnemiAsc){
+
+    private int getCartes(String[] tab, ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc){
+        int carteSurEnnemi = -1;
+        for (int i = 0; i<tab.length; i++) {
+
+            if (jouerSurAdversaire(tab[i])){
+                System.out.println("TEST ENNEMI 2");
+                carteSurEnnemi = i;
+                continue;
+            }
+
+            if (isMotAsc(tab[i])) {
+                System.out.println("TEST CONTINUE " + getCarteValue(tab[i]));
+                tabCarteAsc.add(getCarteValue(tab[i]));
+            }
+            else {
+                System.out.println("TEST CONTINUE " + getCarteValue(tab[i]));
+                tabCarteDesc.add(getCarteValue(tab[i]));
+            }
+        }
+        return carteSurEnnemi;
+    }
+
+
+    private boolean joueUnCoup(String[] tab) {
+        ArrayList<Integer> tabCarteAsc = new ArrayList<>(), tabCarteDesc = new ArrayList<>();
+        int carteSurEnnemi = getCartes(tab, tabCarteAsc, tabCarteDesc);
+        boolean coupEnnemiAsc = false;
+
+        if(carteSurEnnemi != -1){
+            coupEnnemiAsc = isMotAsc(tab[carteSurEnnemi]);
+            carteSurEnnemi = getCarteValue(tab[carteSurEnnemi]);
+        }
+
+        /*
         for (String mot : tab) {
 
             if (isMotAsc(mot)) {
@@ -63,6 +95,7 @@ public class Partie {
                     System.out.println("TEST ENNEMI 2 ASC");
                     carteSurEnnemi = getCarteValue(mot);
                     coupEnnemiAsc = true;
+                    continue;
                 }
                 System.out.println("TEST CONTINUE " + getCarteValue(mot));
                 tabCarteAsc.add(getCarteValue(mot));
@@ -78,34 +111,7 @@ public class Partie {
                 tabCarteDesc.add(getCarteValue(mot));
             }
         }
-    }
-    */
-
-    private boolean joueUnCoup(String[] tab) {
-        ArrayList<Integer> tabCarteAsc = new ArrayList<>(), tabCarteDesc = new ArrayList<>();
-        int carteSurEnnemi = -1;
-        boolean coupEnnemiAsc = false;
-        for (String mot : tab) {
-
-            if (isMotAsc(mot)) {
-                if(jouerSurAdversaire(mot)){
-                    System.out.println("TEST ENNEMI 2 ASC");
-                    carteSurEnnemi = getCarteValue(mot);
-                    coupEnnemiAsc = true;
-                }
-                System.out.println("TEST CONTINUE " + getCarteValue(mot));
-                tabCarteAsc.add(getCarteValue(mot));
-            }
-            else {
-                if(jouerSurAdversaire(mot)){
-                    System.out.println("TEST ENNEMI 2 DESC");
-                    carteSurEnnemi = getCarteValue(mot);
-                    coupEnnemiAsc = false;
-                }
-                System.out.println("TEST CONTINUE " + getCarteValue(mot));
-                tabCarteDesc.add(getCarteValue(mot));
-            }
-        }
+        */
 
         if (IsSaisieJouable(tabCarteAsc,tabCarteDesc, carteSurEnnemi, coupEnnemiAsc)){
             // ajouterCarte
@@ -128,6 +134,7 @@ public class Partie {
 
             tabJoueur[tour%2].removeCartesAndAddCartes(tabCarteDesc, tabCarteAsc, carteSurEnnemi);
 
+            /*
             if(carteSurEnnemi != -1){
                 int i =0;
                 while(tabJoueur[this.tour % 2].nbCartesMain() != 6){
@@ -153,6 +160,7 @@ public class Partie {
 
                 }
             }
+            */
             this.tour++;
             return true;
         }
@@ -226,14 +234,13 @@ public class Partie {
         for (int i = 0; i<tab.size() - 1; i++){
             int j = i+1;
 //                System.out.println("COMP : " + tab.get(i)+ " et " + tab.get(j) + " estAsc = " + estAsc);
-                if(estAsc)
-                    expr = tab.get(j) > tab.get(i) || tab.get(j)+10 == tab.get(i);
-                else
-                    expr = tab.get(i) > tab.get(j) || tab.get(j)-10 == tab.get(i);
-                if (!expr)
-                    return false;
-                j++;
-            }
+            if(estAsc)
+                expr = tab.get(j) > tab.get(i) || tab.get(j)+10 == tab.get(i);
+            else
+                expr = tab.get(i) > tab.get(j) || tab.get(j)-10 == tab.get(i);
+            if (!expr)
+                return false;
+        }
         return true;
     }
 

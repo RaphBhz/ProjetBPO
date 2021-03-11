@@ -30,7 +30,7 @@ public class Joueur {
     }
 
     public boolean peutJouer(){
-        return !(this.cartes.piocheVide() && this.cartes.mainVide());
+        return !(this.cartes.piocheVide() && this.cartes.mainVide() == 0) && this.cartes.oneCarteInHandAndZeroInPioche();
     }
 
     @Override
