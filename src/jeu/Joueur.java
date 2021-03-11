@@ -11,6 +11,8 @@ public class Joueur {
     private Base base = new Base();
     private Cartes cartes = new Cartes();
 
+    private final int[] mainImpossible  = {};
+
     public Joueur(int id){
         this.id = compteurJoueurs++;
     }
@@ -29,8 +31,36 @@ public class Joueur {
             return carte < base.getTopPileDesc() || carte-10 == base.getTopPileDesc();
     }
 
-    public boolean peutJouer(){
-        return !(this.cartes.piocheVide() && this.cartes.mainVide() == 0) && this.cartes.oneCarteInHandAndZeroInPioche();
+    public boolean isCartePosableEnnemi(int carte, boolean pileAsc){
+        if(pileAsc)
+            return carte < this.base.getTopPileAsc();
+        else
+            return carte > this.base.getTopPileDesc();
+    }
+
+    public boolean peutJouer(int ascEnnemi, int descEnnemi){
+        if((this.cartes.piocheVide() && this.cartes.mainVide() == 0) && this.cartes.oneCarteInHandAndZeroInPioche())
+            return false;
+        int cpt = 0;
+        boolean coupEnnemi = false;
+        for(int carte : this.cartes.getMain()){
+            if(!coupEnnemi){
+                if(carte > descEnnemi && carte < ascEnnemi){
+                    coupEnnemi = true;
+                    cpt++;
+                    continue;
+                }
+            }
+            if(carte < this.base.getTopPileDesc() || carte - 10 == this.base.getTopPileDesc() || carte > this.base.getTopPileAsc() || carte + 10 == this.base.getTopPileAsc())
+                cpt++;
+            if(cpt>=2){
+                System.out.println("PEUT JOUER");
+                return true;
+            }
+        }
+        //return !(this.cartes.piocheVide() && this.cartes.mainVide() == 0) && this.cartes.oneCarteInHandAndZeroInPioche();
+        System.out.println("PEUT PAS JOUER");
+        return false;
     }
 
     @Override
@@ -72,6 +102,14 @@ public class Joueur {
         }
         return true;
 
+    }
+
+    public int getTopPileAsc(){
+        return this.base.getTopPileAsc();
+    }
+
+    public int getTopPileDesc(){
+        return this.base.getTopPileDesc();
     }
 
     public void removeCartesAndAddCartes(ArrayList<Integer> tabCarteDesc, ArrayList<Integer> tabCarteAsc, int carteSurEnnemi) {

@@ -1,5 +1,7 @@
 package jeu;
 
+import java.net.StandardSocketOptions;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -19,13 +21,15 @@ public class Partie {
         Scanner sc = new Scanner(System.in);
         String s;
         String[] tab;
-        int count;
+        int count = 0;
         System.out.println(affiche());
         System.out.print("> ");
         s = sc.nextLine();
+        boolean erreur = true;
         // modifier la boucle
-        // j'ai ajouté la méthode oneCarteInHandAndZeroInPioche() afin de déterminer si Joueur peut encore poser. Partie s'arrête dès qu'un joueur se trouve dans cette situation
-        while (this.continuer()) {
+        // j'ai ajouté la méthode oneCarteInHandAndZeroInPioche() afin de déterminer si Joueur peut encore poser. Partie s'arrête dès qu'un joueur se trouve dans cette situation.
+        while (erreur || this.continuer()) { // On vérifie l'erreur en premier dans le ou car le test logique du ou ne va pas exécuter continuer si erreur est vérifiée donc on ne vérifie la jouabilité du jouer d'après que si la saisie est correcte (c'est pas mal en vrai)
+            erreur = false;
             count = s.length() - s.replace("'", "").length();
             if (!s.equals("") && count<=1) {
                 tab = decompose(s);
@@ -35,18 +39,21 @@ public class Partie {
                         System.out.print("> ");
                     }
                     else {
-                        System.out.println("ERREUR 6: JoueUnCoup == false");
+                        //System.out.println("ERREUR 6: JoueUnCoup == false");
                         System.out.print("#> ");
+                        erreur = true;
                     }
                 }
                 else {
-                    System.out.println("ERREUR 7: checkFormatConditions(tab) && tab.length >= 2 car " + tab.length);
+                    //System.out.println("ERREUR 7: checkFormatConditions(tab) && tab.length >= 2 car " + tab.length);
                     System.out.print("#> ");
+                    erreur = true;
                 }
             }
             else {
-                System.out.println("ERREUR 8: !s.equals(\"\") && count<=1");
+                //System.out.println("ERREUR 8: !s.equals(\"\") && count<=1");
                 System.out.print("#> ");
+                erreur = true;
             }
 
             s = sc.nextLine();
@@ -59,17 +66,17 @@ public class Partie {
         for (int i = 0; i<tab.length; i++) {
 
             if (jouerSurAdversaire(tab[i])){
-                System.out.println("TEST ENNEMI 2");
+                //System.out.println("TEST ENNEMI 2");
                 carteSurEnnemi = i;
                 continue;
             }
 
             if (isMotAsc(tab[i])) {
-                System.out.println("TEST CONTINUE " + getCarteValue(tab[i]));
+                //System.out.println("TEST CONTINUE " + getCarteValue(tab[i]));
                 tabCarteAsc.add(getCarteValue(tab[i]));
             }
             else {
-                System.out.println("TEST CONTINUE " + getCarteValue(tab[i]));
+                //System.out.println("TEST CONTINUE " + getCarteValue(tab[i]));
                 tabCarteDesc.add(getCarteValue(tab[i]));
             }
         }
@@ -116,7 +123,7 @@ public class Partie {
         if (IsSaisieJouable(tabCarteAsc,tabCarteDesc, carteSurEnnemi, coupEnnemiAsc)){
             // ajouterCarte
             if(carteSurEnnemi != -1){
-                System.out.println("TEST ENNEMI");
+                //System.out.println("TEST ENNEMI");
                 tabJoueur[(this.tour + 1) % 2 ].ajouterCarteBase(carteSurEnnemi, coupEnnemiAsc);
 
                 /*
@@ -173,18 +180,18 @@ public class Partie {
         int adversaire = tour%2;
 
         if (!tabJoueur[adversaire].areCartesInMain(tabCarteAsc, tabCarteDesc, coupEnnemi)) {
-            System.out.println("ERREUR 5: Les cartes ne sont pas dans ta main");
+            // System.out.println("ERREUR 5: Les cartes ne sont pas dans ta main");
             return false;
         }
 
         if (!triSaisie(tabCarteAsc, true) || !triSaisie(tabCarteDesc, false)){
-            System.out.println("ERREUR 1: Input non trié");
+            // System.out.println("ERREUR 1: Input non trié");
             return false;
         }
 
         if (coupEnnemi != -1){
-            if (!tabJoueur[(this.tour + 1) % 2 ].isCartePosable(coupEnnemi, CoupEnnemiAsc)){
-                System.out.println("ERREUR 2: Coup adversaire non posable");
+            if (!tabJoueur[(this.tour + 1) % 2 ].isCartePosableEnnemi(coupEnnemi, CoupEnnemiAsc)){
+                // System.out.println("ERREUR 2: Coup adversaire non posable");
                 return false;
             }
         }
@@ -192,14 +199,14 @@ public class Partie {
         if (tabCarteAsc.size() != 0){
            // System.out.println("ERREUR3");
             if (!tabJoueur[adversaire].isCartePosable(tabCarteAsc.get(0), true)){
-                System.out.println("ERREUR 3: Coup ascendant non posable");
+                // System.out.println("ERREUR 3: Coup ascendant non posable");
                 return false;
             }
         }
         if (tabCarteDesc.size() != 0){
            // System.out.println("ERREUR4");
             if (!tabJoueur[adversaire].isCartePosable(tabCarteDesc.get(0), false)){
-                System.out.println("ERREUR 4: Coup descendant non posable");
+                // System.out.println("ERREUR 4: Coup descendant non posable");
                 return false;
             }
         }
@@ -280,15 +287,18 @@ public class Partie {
     }
 
     public boolean continuer(){
-        return tabJoueur[0].peutJouer() && tabJoueur[1].peutJouer();
+        System.out.println("PTITE STRING AVANT " + (tour+1)%2);
+        return tabJoueur[(tour + 1)%2].peutJouer(tabJoueur[tour%2].getTopPileAsc(), tabJoueur[tour%2].getTopPileDesc());
     }
+
+
 
     public String affiche(){
         StringBuilder s = new StringBuilder();
         s.append("NORD ");
         s.append(tabJoueur[0].toString());
         s.append("\n");
-        s.append("SUD ");
+        s.append("SUD  ");
         s.append(tabJoueur[1].toString());
         s.append("\ncartes ");
         if(this.tour % 2 == 0){

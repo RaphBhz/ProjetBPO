@@ -6,11 +6,10 @@ import java.util.Collections;
 import java.util.Stack;
 
 public class Cartes {
-    private static final int MAX_PIOCHE = 10;
+    private static final int MAX_PIOCHE = 58;
     private Stack<Integer> cartesPioche = new Stack<Integer>();
     private static final int MAX_MAIN = 6;
     private int[] cartesEnMain =  new int[MAX_MAIN];
-
 
     public Cartes(){
         addAllCartesToPioche();
@@ -116,9 +115,15 @@ public class Cartes {
         StringBuilder s = new StringBuilder();
         for(int carte : cartesEnMain){
             if(carte != -1){
+                if(carte<10)
+                    s.append("0");
                 s.append(carte + " ");
             }
         }
         return s.toString();
+    }
+
+    public int[] getMain(){
+        return cartesEnMain.clone();
     }
 }

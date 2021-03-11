@@ -27,8 +27,12 @@ public class Base {
     public String toString(){
         StringBuilder s = new StringBuilder();
         s.append("^[");
+        if(this.carteAscendante<10)
+            s.append("0");
         s.append(this.carteAscendante);
         s.append("] v[");
+        if(this.carteDescendante<10)
+            s.append("0");
         s.append(this.carteDescendante);
         s.append("]");
         return s.toString();
