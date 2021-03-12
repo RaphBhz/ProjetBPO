@@ -1,7 +1,5 @@
 package jeu;
 
-import java.net.StandardSocketOptions;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -13,7 +11,7 @@ public class Partie {
 
     public Partie(){
         for (int i = 0; i < MAX_JOUEURS; i++)
-            tabJoueur[i] = new Joueur(i);
+            tabJoueur[i] = new Joueur();
         Start();
     }
 
@@ -24,42 +22,61 @@ public class Partie {
         int count = 0;
         System.out.println(affiche());
         System.out.print("> ");
-        s = sc.nextLine();
-        boolean erreur = true;
+        boolean erreur = false;
+
         // modifier la boucle
         // j'ai ajouté la méthode oneCarteInHandAndZeroInPioche() afin de déterminer si Joueur peut encore poser. Partie s'arrête dès qu'un joueur se trouve dans cette situation.
-        while (erreur || this.continuer()) { // On vérifie l'erreur en premier dans le ou car le test logique du ou ne va pas exécuter continuer si erreur est vérifiée donc on ne vérifie la jouabilité du jouer d'après que si la saisie est correcte (c'est pas mal en vrai)
-            erreur = false;
+        while (true) { // On vérifie l'erreur en premier dans le ou car le test logique du ou ne va pas exécuter continuer si erreur est vérifiée donc on ne vérifie la jouabilité du jouer d'après que si la saisie est correcte (c'est pas mal en vrai)
+
+            if (!erreur){
+                if (!this.continuer())
+                    break;
+            }
+            s = sc.nextLine();
+
             count = s.length() - s.replace("'", "").length();
             if (!s.equals("") && count<=1) {
                 tab = decompose(s);
                 if (checkFormatConditions(tab) && tab.length >= 2) {
-                    if (joueUnCoup(tab)) {
+                    if (traiterInputBonFormat(tab)) {
+                        System.out.println(tabJoueur[(tour+1)%2].toStringNbCartesAddedAndRemoved());
                         System.out.println(affiche());
                         System.out.print("> ");
+                        erreur = false;
                     }
                     else {
-                        //System.out.println("ERREUR 6: JoueUnCoup == false");
+                        System.out.println("ERREUR 6: JoueUnCoup == false");
                         System.out.print("#> ");
                         erreur = true;
                     }
                 }
                 else {
-                    //System.out.println("ERREUR 7: checkFormatConditions(tab) && tab.length >= 2 car " + tab.length);
+                    System.out.println("ERREUR 7: checkFormatConditions(tab) && tab.length >= 2 car " + tab.length);
                     System.out.print("#> ");
                     erreur = true;
                 }
             }
             else {
-                //System.out.println("ERREUR 8: !s.equals(\"\") && count<=1");
+                System.out.println("ERREUR 8: !s.equals(\"\") && count<=1");
                 System.out.print("#> ");
                 erreur = true;
             }
 
-            s = sc.nextLine();
         }
+
+        System.out.println(gagnantString());
     }
 
+
+    private String gagnantString(){
+        StringBuilder s = new StringBuilder();
+        s.append("partie finie, ");
+        if ((tour+1)%2 == 0)
+            s.append("NORD a gagné");
+        else
+            s.append("SUD a gagné");
+        return s.toString();
+    }
 
     private int getCartes(String[] tab, ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc){
         int carteSurEnnemi = -1;
@@ -84,7 +101,7 @@ public class Partie {
     }
 
 
-    private boolean joueUnCoup(String[] tab) {
+    private boolean traiterInputBonFormat(String[] tab) {
         ArrayList<Integer> tabCarteAsc = new ArrayList<>(), tabCarteDesc = new ArrayList<>();
         int carteSurEnnemi = getCartes(tab, tabCarteAsc, tabCarteDesc);
         boolean coupEnnemiAsc = false;
@@ -94,86 +111,28 @@ public class Partie {
             carteSurEnnemi = getCarteValue(tab[carteSurEnnemi]);
         }
 
-        /*
-        for (String mot : tab) {
-
-            if (isMotAsc(mot)) {
-                if(jouerSurAdversaire(mot)){
-                    System.out.println("TEST ENNEMI 2 ASC");
-                    carteSurEnnemi = getCarteValue(mot);
-                    coupEnnemiAsc = true;
-                    continue;
-                }
-                System.out.println("TEST CONTINUE " + getCarteValue(mot));
-                tabCarteAsc.add(getCarteValue(mot));
-            }
-            else {
-                if(jouerSurAdversaire(mot)){
-                    System.out.println("TEST ENNEMI 2 DESC");
-                    carteSurEnnemi = getCarteValue(mot);
-                    coupEnnemiAsc = false;
-                    continue;
-                }
-                System.out.println("TEST CONTINUE " + getCarteValue(mot));
-                tabCarteDesc.add(getCarteValue(mot));
-            }
-        }
-        */
-
         if (IsSaisieJouable(tabCarteAsc,tabCarteDesc, carteSurEnnemi, coupEnnemiAsc)){
             // ajouterCarte
-            if(carteSurEnnemi != -1){
-                //System.out.println("TEST ENNEMI");
-                tabJoueur[(this.tour + 1) % 2 ].ajouterCarteBase(carteSurEnnemi, coupEnnemiAsc);
-
-                /*
-                if(coupEnnemiAsc)
-                    tabJoueur[(this.tour + 1) % 2 ].ajouterCarteBase(carteSurEnnemi, true);
-                else
-                    tabJoueur[(this.tour + 1) % 2 ].ajouterCarteBase(carteSurEnnemi, false);
-                */
-                //ptdr on devait être fatigué
-            }
-            if(!tabCarteAsc.isEmpty())
-                tabJoueur[this.tour % 2].ajouterCarteBase(tabCarteAsc.get(tabCarteAsc.size() - 1), true);
-            if(!tabCarteDesc.isEmpty())
-                tabJoueur[this.tour % 2].ajouterCarteBase(tabCarteDesc.get(tabCarteDesc.size() - 1), false);
-
-            tabJoueur[tour%2].removeCartesAndAddCartes(tabCarteDesc, tabCarteAsc, carteSurEnnemi);
-
-            /*
-            if(carteSurEnnemi != -1){
-                int i =0;
-                while(tabJoueur[this.tour % 2].nbCartesMain() != 6){
-                    boolean exp1 = i<tabCarteAsc.size(), exp2 = i<tabCarteDesc.size();
-                    if(exp1) tabJoueur[this.tour % 2].piocher(tabCarteAsc.get(i));
-                    if(exp2) tabJoueur[this.tour % 2].piocher(tabCarteDesc.get(i));
-                    if(!(exp1 && exp2)) tabJoueur[this.tour % 2].piocher(-1);
-                    i++;
-                }
-            }
-            else{
-                int i = 0, compteur = 0;
-                while(compteur != 2){
-                    if(!tabCarteAsc.isEmpty()) {
-                        tabJoueur[this.tour % 2].piocher(tabCarteAsc.get(i));
-                        compteur++;
-                    }
-                    if(!tabCarteDesc.isEmpty()) {
-                        tabJoueur[this.tour % 2].piocher(tabCarteDesc.get(i));
-                        compteur++;
-                    }
-                    i++;
-
-                }
-            }
-            */
+            this.jouerLesCartes(carteSurEnnemi, coupEnnemiAsc, tabCarteAsc, tabCarteDesc);
             this.tour++;
             return true;
         }
         else
            //  System.out.println("Saisie non jouable");
             return false;
+    }
+
+    private void jouerLesCartes(int carteSurEnnemi, boolean coupEnnemiAsc, ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc){
+        if(carteSurEnnemi != -1){
+            //System.out.println("TEST ENNEMI");
+            tabJoueur[(this.tour + 1) % 2 ].ajouterCarteBase(carteSurEnnemi, coupEnnemiAsc);
+        }
+        if(!tabCarteAsc.isEmpty())
+            tabJoueur[this.tour % 2].ajouterCarteBase(tabCarteAsc.get(tabCarteAsc.size() - 1), true);
+        if(!tabCarteDesc.isEmpty())
+            tabJoueur[this.tour % 2].ajouterCarteBase(tabCarteDesc.get(tabCarteDesc.size() - 1), false);
+
+        tabJoueur[tour%2].removeCartesAndAddCartes(tabCarteDesc, tabCarteAsc, carteSurEnnemi);
     }
 
     private boolean IsSaisieJouable(ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc, int coupEnnemi, boolean CoupEnnemiAsc){
@@ -287,8 +246,8 @@ public class Partie {
     }
 
     public boolean continuer(){
-        System.out.println("PTITE STRING AVANT " + (tour+1)%2);
-        return tabJoueur[(tour + 1)%2].peutJouer(tabJoueur[tour%2].getTopPileAsc(), tabJoueur[tour%2].getTopPileDesc());
+        //System.out.println("PTITE STRING AVANT " + tour%2);
+        return tabJoueur[tour%2].peutJouer(tabJoueur[(tour + 1)%2].getTopPileAsc(), tabJoueur[(tour + 1)%2].getTopPileDesc());
     }
 
 

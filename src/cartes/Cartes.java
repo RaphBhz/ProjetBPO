@@ -57,24 +57,28 @@ public class Cartes {
         return false;
     }
 
-    public void removeCartes(ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc, int carteSurEnnemi){
+    public int removeCartes(ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc, int carteSurEnnemi){
 
-        tabCarteAsc.addAll(tabCarteDesc);
+        int cpt = 0;
+        ArrayList<Integer> tabCarteTemp = new ArrayList<>(tabCarteAsc);
+        tabCarteTemp.addAll(tabCarteDesc);
         if (carteSurEnnemi != -1)
-            tabCarteAsc.add(carteSurEnnemi);
+            tabCarteTemp.add(carteSurEnnemi);
 
         for (int i = 0; i<MAX_MAIN; i++){
 
-            for (Integer integer : tabCarteAsc)
+            for (Integer integer : tabCarteTemp)
                 if (integer == cartesEnMain[i]) {
                     cartesEnMain[i] = -1;
+                    cpt++;
                     break;
                 }
 
         }
+        return cpt;
     }
 
-    public void addCartes(int carteSurEnnemi){
+    public int addCartes(int carteSurEnnemi){
         int nbCartesAdded = 0;
         for (int i = 0; i<MAX_MAIN; i++){
             if (cartesPioche.size() == 0)
@@ -88,6 +92,7 @@ public class Cartes {
                 break;
 
         }
+        return nbCartesAdded;
     }
 
     public boolean piocheVide(){
@@ -95,7 +100,7 @@ public class Cartes {
     }
 
     public boolean oneCarteInHandAndZeroInPioche(){
-        return cartesPioche.size() == 0 && mainVide() <2;
+        return cartesPioche.size() == 0 && nbCartesMain() <2;
     }
 
     public int nbCartes(){
@@ -117,7 +122,7 @@ public class Cartes {
             if(carte != -1){
                 if(carte<10)
                     s.append("0");
-                s.append(carte + " ");
+                s.append(carte).append(" ");
             }
         }
         return s.toString();

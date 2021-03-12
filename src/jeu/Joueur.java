@@ -6,16 +6,17 @@ import cartes.Cartes;
 import java.util.ArrayList;
 
 public class Joueur {
-    private static int compteurJoueurs = 0;
-    private int id;
+    private int nbCartesRemovedFromHand = -1, nbCartesAddedToHand = -1;
     private Base base = new Base();
     private Cartes cartes = new Cartes();
 
     private final int[] mainImpossible  = {};
 
+    /*
     public Joueur(int id){
         this.id = compteurJoueurs++;
     }
+    */
 
     public void ajouterCarteBase(int carte, boolean pileAsc){
         if (pileAsc)
@@ -39,8 +40,10 @@ public class Joueur {
     }
 
     public boolean peutJouer(int ascEnnemi, int descEnnemi){
-        if((this.cartes.piocheVide() && this.cartes.mainVide() == 0) && this.cartes.oneCarteInHandAndZeroInPioche())
+        if((this.cartes.piocheVide() && this.cartes.nbCartesMain() == 0) || this.cartes.oneCarteInHandAndZeroInPioche()) {
+            System.out.println("Erreur 9: Pas assez de cartes dans la main et dans la pioche");
             return false;
+        }
         int cpt = 0;
         boolean coupEnnemi = false;
         for(int carte : this.cartes.getMain()){
@@ -54,12 +57,12 @@ public class Joueur {
             if(carte < this.base.getTopPileDesc() || carte - 10 == this.base.getTopPileDesc() || carte > this.base.getTopPileAsc() || carte + 10 == this.base.getTopPileAsc())
                 cpt++;
             if(cpt>=2){
-                System.out.println("PEUT JOUER");
+                //System.out.println("PEUT JOUER");
                 return true;
             }
         }
         //return !(this.cartes.piocheVide() && this.cartes.mainVide() == 0) && this.cartes.oneCarteInHandAndZeroInPioche();
-        System.out.println("PEUT PAS JOUER");
+        System.out.println("Erreur 10: Pas assez de cartes jouables. Nombre de cartes jouables : " + cpt);
         return false;
     }
 
@@ -84,6 +87,13 @@ public class Joueur {
         s.append("{ ");
         s.append(this.cartes.afficheMain());
         s.append("}");
+        return s.toString();
+    }
+
+    public String toStringNbCartesAddedAndRemoved(){
+        StringBuilder s = new StringBuilder();
+        s.append(this.nbCartesRemovedFromHand).append(" cartes posées, ");
+        s.append(this.nbCartesAddedToHand).append(" cartes piochées");
         return s.toString();
     }
 
@@ -114,7 +124,8 @@ public class Joueur {
 
     public void removeCartesAndAddCartes(ArrayList<Integer> tabCarteDesc, ArrayList<Integer> tabCarteAsc, int carteSurEnnemi) {
 
-        cartes.removeCartes(tabCarteAsc, tabCarteDesc, carteSurEnnemi);
-        cartes.addCartes(carteSurEnnemi);
+        this.nbCartesRemovedFromHand = cartes.removeCartes(tabCarteAsc, tabCarteDesc, carteSurEnnemi);
+        this.nbCartesAddedToHand = cartes.addCartes(carteSurEnnemi);
+
     }
 }
