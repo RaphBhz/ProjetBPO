@@ -12,63 +12,37 @@ public class Partie {
     public Partie(){
         for (int i = 0; i < MAX_JOUEURS; i++)
             tabJoueur[i] = new Joueur();
-        Start();
+        //Start();
     }
 
-    private void Start(){
-        Scanner sc = new Scanner(System.in);
-        String s;
+    public boolean traiterInput(String s){
         String[] tab;
         int count = 0;
-        System.out.println(affiche());
-        System.out.print("> ");
-        boolean erreur = false;
 
-        // modifier la boucle
-        // j'ai ajouté la méthode oneCarteInHandAndZeroInPioche() afin de déterminer si Joueur peut encore poser. Partie s'arrête dès qu'un joueur se trouve dans cette situation.
-        while (true) { // On vérifie l'erreur en premier dans le ou car le test logique du ou ne va pas exécuter continuer si erreur est vérifiée donc on ne vérifie la jouabilité du jouer d'après que si la saisie est correcte (c'est pas mal en vrai)
-
-            if (!erreur){
-                if (!this.continuer())
-                    break;
+        count = s.length() - s.replace("'", "").length();
+        if (!s.equals("") && count<=1) {
+            tab = decompose(s);
+            if (checkFormatConditions(tab) && tab.length >= 2) {
+                if (traiterInputBonFormat(tab))
+                    return false;
+                else
+                    return true;
             }
-            s = sc.nextLine();
-
-            count = s.length() - s.replace("'", "").length();
-            if (!s.equals("") && count<=1) {
-                tab = decompose(s);
-                if (checkFormatConditions(tab) && tab.length >= 2) {
-                    if (traiterInputBonFormat(tab)) {
-                        System.out.println(tabJoueur[(tour+1)%2].toStringNbCartesAddedAndRemoved());
-                        System.out.println(affiche());
-                        System.out.print("> ");
-                        erreur = false;
-                    }
-                    else {
-                        System.out.println("ERREUR 6: JoueUnCoup == false");
-                        System.out.print("#> ");
-                        erreur = true;
-                    }
-                }
-                else {
-                    System.out.println("ERREUR 7: checkFormatConditions(tab) && tab.length >= 2 car " + tab.length);
-                    System.out.print("#> ");
-                    erreur = true;
-                }
-            }
-            else {
-                System.out.println("ERREUR 8: !s.equals(\"\") && count<=1");
-                System.out.print("#> ");
-                erreur = true;
-            }
-
+            else
+                return true;
         }
-
-        System.out.println(gagnantString());
+        else {
+            return true;
+        }
     }
 
 
-    private String gagnantString(){
+
+    public String StringDeCartesAddedEtRemoved(){
+        return tabJoueur[(tour+1)%2].toStringNbCartesAddedAndRemoved();
+    }
+
+    public String gagnantString(){
         StringBuilder s = new StringBuilder();
         s.append("partie finie, ");
         if ((tour+1)%2 == 0)
@@ -173,23 +147,6 @@ public class Partie {
         return true;
     }
 
-/*    private static boolean triSaisie(ArrayList<Integer> tab, boolean estAsc){
-        boolean expr;
-        for(int num : tab)
-            System.out.println(num);
-        for (int i = 0; i<tab.size(); i++){
-            for (int j = i+1; j<tab.size(); j++){
-                System.out.println("COMP : " + tab.get(i)+ " et " + tab.get(j));
-                if(estAsc)
-                    expr = tab.get(j) > tab.get(i);
-                else
-                    expr = tab.get(i) > tab.get(j);
-                if (!expr)
-                    return false;
-            }
-        }
-        return true;
-    }*/
 
     private static boolean triSaisie(ArrayList<Integer> tab, boolean estAsc){
         boolean expr;
@@ -232,9 +189,6 @@ public class Partie {
         return true;
     }
 
-    /*private static boolean checkCommenceParNb(String mot){
-        return Character.isDigit(mot.charAt(0));
-    }*/
 
     private static boolean jouerSurAdversaire(String mot){
         return mot.contains("'");

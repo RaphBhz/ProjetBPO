@@ -1,14 +1,13 @@
 package cartes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Stack;
 
 public class Cartes {
     private static final int MAX_PIOCHE = 58;
-    private Stack<Integer> cartesPioche = new Stack<Integer>();
     private static final int MAX_MAIN = 6;
+    private Stack<Integer> cartesPioche = new Stack<Integer>();
     private int[] cartesEnMain =  new int[MAX_MAIN];
 
     public Cartes(){
@@ -28,25 +27,6 @@ public class Cartes {
             cartesPioche.push(i+2);
 
         }
-    }
-
-    public int mainVide(){
-        int cpt = 0;
-        for(int i = 0; i < MAX_MAIN; i++){
-            if(cartesEnMain[i] != -1)
-                cpt++;
-        }
-        return cpt;
-    }
-
-    public int pickCarte(){
-        return cartesPioche.pop();
-    }
-
-    public void piocher(int numCarte){
-        if(this.cartesEnMain.length == 6)
-            return;
-        this.cartesEnMain[Arrays.asList(cartesEnMain).indexOf(numCarte)] = this.pickCarte();
     }
 
     public boolean isCarteInMain(int carte){
@@ -85,7 +65,7 @@ public class Cartes {
                 break;
 
             if (cartesEnMain[i] == -1){
-                cartesEnMain[i] = pickCarte();
+                cartesEnMain[i] = cartesPioche.pop();
                 nbCartesAdded+=1;
             }
             if (carteSurEnnemi == -1 && nbCartesAdded == 2)

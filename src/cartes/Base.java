@@ -3,14 +3,8 @@ package cartes;
 import java.util.Stack;
 
 public class Base {
-    private static final int MAX_BASE = 2;
-    private int carteAscendante;
-    private int carteDescendante;
-
-    public Base(){
-        this.carteAscendante = 1;
-        this.carteDescendante = 60;
-    }
+    private int carteAscendante = 1;
+    private int carteDescendante = 60;
 
     public int getTopPileAsc(){
         return this.carteAscendante;

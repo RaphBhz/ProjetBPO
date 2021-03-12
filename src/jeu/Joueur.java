@@ -10,14 +10,6 @@ public class Joueur {
     private Base base = new Base();
     private Cartes cartes = new Cartes();
 
-    private final int[] mainImpossible  = {};
-
-    /*
-    public Joueur(int id){
-        this.id = compteurJoueurs++;
-    }
-    */
-
     public void ajouterCarteBase(int carte, boolean pileAsc){
         if (pileAsc)
             base.addCartePileAsc(carte);
@@ -78,10 +70,6 @@ public class Joueur {
         return s.toString();
     }
 
-    public int nbCartesMain(){
-        return this.cartes.nbCartesMain();
-    }
-
     public String afficheMain(){
         StringBuilder s = new StringBuilder();
         s.append("{ ");
@@ -95,10 +83,6 @@ public class Joueur {
         s.append(this.nbCartesRemovedFromHand).append(" cartes posées, ");
         s.append(this.nbCartesAddedToHand).append(" cartes piochées");
         return s.toString();
-    }
-
-    public void piocher(int numCarte){
-        this.cartes.piocher(numCarte);
     }
 
     public boolean areCartesInMain(ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc, int coupEnnemi){
