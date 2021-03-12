@@ -3,18 +3,28 @@ package jeu;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * @brief Classe gérant le déroulement de la partie.
+ */
 public class Partie {
-    private Joueur[] tabJoueur = new Joueur[MAX_JOUEURS];
-    private static final int MAX_JOUEURS = 2;
-    private int tour = 0;
+    private Joueur[] tabJoueur = new Joueur[MAX_JOUEURS]; // Tableau contenant les deux joueurs qui s'affrontent.
+    private static final int MAX_JOUEURS = 2; // Maximum de joueurs pouvant jouer.
+    private int tour = 0; // Tour actuel (débute au tour 0).
 
-
+    /**
+     * @brief Initialise le tableau de joueurs.
+     */
     public Partie(){
         for (int i = 0; i < MAX_JOUEURS; i++)
             tabJoueur[i] = new Joueur();
         //Start();
     }
 
+    /**
+     * @brief Traite la ligne entrée par le joueur dont c'est le tour. Exécute le coup si l'entrée est valide. Redemande une entrée sinon.
+     * @param s [String] : Ligne à traiter entrée par le joueur.
+     * @return [boolean] : Renvoie la validité de l'input.
+     */
     public boolean traiterInput(String s){
         String[] tab;
         int count = 0;
@@ -37,11 +47,18 @@ public class Partie {
     }
 
 
-
+    /**
+     * @brief Renvoie la chaîne de caractères concernant les cartes posées et les cartes piochées.
+     * @return [String] : Chaîne de caractères des cartes jouées et piochées.
+     */
     public String StringDeCartesAddedEtRemoved(){
         return tabJoueur[(tour+1)%2].toStringNbCartesAddedAndRemoved();
     }
 
+    /**
+     * @brief Renvoie la chaîne de caractères de fin de partie, indiquant le gagnant de la partie.
+     * @return [String] : Chaîne de caractères de fin de partie.
+     */
     public String gagnantString(){
         StringBuilder s = new StringBuilder();
         s.append("partie finie, ");
@@ -52,6 +69,13 @@ public class Partie {
         return s.toString();
     }
 
+    /**
+     * @brief Range les cartes jouées contenues dans le tableau tab dans les tableaux de cartes ascendantes (tabCarteAsc) et descendantes(tabCarteDesc).
+     * @param tab [String[]] : Tableau des chaînes de caractères désignant chaque coup joué.
+     * @param tabCarteAsc [ArrayList<Integer>] : Tableau des valeurs des cartes jouées sur la pile ascendante.
+     * @param tabCarteDesc [ArrayList<Integer>] : Tableau des valeurs des cartes jouées sur la pile descendante.
+     * @return [int] : Renvoie la valeur de l'index de la carte jouée sur les piles de l'adversaire dans le tableau tab si le joueur a joué sur son adversaire ou -1 sinon.
+     */
     private int getCartes(String[] tab, ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc){
         int carteSurEnnemi = -1;
         for (int i = 0; i<tab.length; i++) {
@@ -75,6 +99,11 @@ public class Partie {
     }
 
 
+    /**
+     * @brief Vérifie si les coups entrés par le joueur sont valides.
+     * @param tab [String[]] : Tableau des chaînes de caractères désignant chaque coup joué.
+     * @return [boolean] : La validité des coups du joueur.
+     */
     private boolean traiterInputBonFormat(String[] tab) {
         ArrayList<Integer> tabCarteAsc = new ArrayList<>(), tabCarteDesc = new ArrayList<>();
         int carteSurEnnemi = getCartes(tab, tabCarteAsc, tabCarteDesc);
@@ -96,6 +125,13 @@ public class Partie {
             return false;
     }
 
+    /**
+     * @brief Joue les entrées des joueurs : Actualise les bases, retire les cartes jouées des mains et pioche les cartes à piocher.
+     * @param carteSurEnnemi [int] : Valeur de la carte jouée sur l'adversaire.
+     * @param coupEnnemiAsc [boolean] : Contient vrai si le coup sur adversaire est ascendant, faux sinon.
+     * @param tabCarteAsc [ArrayList<Integer>] : Tableau contenant les valeurs des cartes jouées sur la pile ascendante.
+     * @param tabCarteDesc [ArrayList<Integer>] : Tableau contenant les valeurs des cartes jouées sur la pile descendante.
+     */
     private void jouerLesCartes(int carteSurEnnemi, boolean coupEnnemiAsc, ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc){
         if(carteSurEnnemi != -1){
             //System.out.println("TEST ENNEMI");
@@ -109,6 +145,14 @@ public class Partie {
         tabJoueur[tour%2].removeCartesAndAddCartes(tabCarteDesc, tabCarteAsc, carteSurEnnemi);
     }
 
+    /**
+     * @brief Vérifie si la saisie entrée par le joueur est jouable. Vérifie si les valeurs des cartes jouées peuvent être posées sur leurs bases respectives.
+     * @param tabCarteAsc [ArrayList<Integer>] : Tableau contenant les valeurs des cartes jouées sur la pile ascendante.
+     * @param tabCarteDesc [ArrayList<Integer>] : Tableau contenant les valeurs des cartes jouées sur la pile descendante.
+     * @param coupEnnemi [int] : Valeur de la carte jouée sur l'adversaire si le joueur a joué sur son adversaire, -1 sinon.
+     * @param CoupEnnemiAsc [boolean] : Vrai si la carte jouée sur adversaire a été jouée sur la pile ascendante, faux sinon.
+     * @return
+     */
     private boolean IsSaisieJouable(ArrayList<Integer> tabCarteAsc, ArrayList<Integer> tabCarteDesc, int coupEnnemi, boolean CoupEnnemiAsc){
         int adversaire = tour%2;
 
@@ -148,6 +192,12 @@ public class Partie {
     }
 
 
+    /**
+     * @brief Vérifie si la saisie du joueur est triée. Carte ascendantes dans l'ordre croissant et les descendantes dans l'ordre décroissant.
+     * @param tab [ArrayList<Integer>] : Valeurs des cartes à vérifier.
+     * @param estAsc [boolean] : Vrai si il sagit de cartes jouées sur la pile ascendante, faux sinon.
+     * @return [boolean] : Vrai si la saisie est triée, faux sinon.
+     */
     private static boolean triSaisie(ArrayList<Integer> tab, boolean estAsc){
         boolean expr;
         if(tab.size()==1)
@@ -167,6 +217,11 @@ public class Partie {
         return true;
     }
 
+    /**
+     * @brief Récupère la valeur d'une carte contenue dans une chaîne de caractères.
+     * @param mot [String] : Chaîne de caractères contenant la valeur d'une carte.
+     * @return [int] : Valeur de la carte contenue dans la chaîne de caractères.
+     */
     private static int getCarteValue(String mot) {
         int carte;
         if (Character.isDigit(mot.charAt(1)))
@@ -176,36 +231,61 @@ public class Partie {
         return carte;
     }
 
+    /**
+     * @brief Vérifie si le coup joué est ascendant ou non.
+     * @param mot [String] : Chaîne de caractère contenant un coup joué.
+     * @return [boolea] : Renvoie vrai si le coup est ascendant, faux sinon.
+     */
     private static boolean isMotAsc(String mot){
         return mot.contains("^");
     }
 
+    /**
+     * @brief Vérifie si une suite de coup joués est conforme au format d'entrée attendu.
+     * @param tab [String[]] : Tableau contenant les chaînes de caractères des coups joués.
+     * @return [boolean] : Renvoie vrai si l'ensemble de coup est conforme au format, faux sinon.
+     */
     private static boolean checkFormatConditions(String[] tab){
         for (String mot : tab) {
            // System.out.println("MOT :" + mot);
-            if (!(mot.matches("[0-9]?[0-9][v^]'?")))
+            if (!(mot.matches("[0-5]?[0-9][v^]'?")))
                 return false;
         }
         return true;
     }
 
-
+    /**
+     * @brief Vérifie si le coup joué est joué sur l'adversaire.
+     * @param mot [String] : Chaîne de caractères contenant le coup joué.
+     * @return [boolean] : Renvoie vrai si le coup est joué sur l'adversaire, faux sinon.
+     */
     private static boolean jouerSurAdversaire(String mot){
         return mot.contains("'");
     }
 
+    /**
+     * @brief Décompose une série de coup en un tableau de chaîne de caractères de chaque coup joué.
+     * @param s [String] : Chaîne de caractères contenant la série de coups joués.
+     * @return [String[]] : Tableau de chaîne de caractères contenant chaque coup de la série de coup joués.
+     */
     private static String[] decompose(String s) {
         // une solution
         return s.split("\\s+");
     }
 
+    /**
+     * @brief Vérifie si la partie peut continuer ou non.
+     * @return [boolean] : Renvoie true si la partie peut continuer, faux sinon.
+     */
     public boolean continuer(){
         //System.out.println("PTITE STRING AVANT " + tour%2);
         return tabJoueur[tour%2].peutJouer(tabJoueur[(tour + 1)%2].getTopPileAsc(), tabJoueur[(tour + 1)%2].getTopPileDesc());
     }
 
-
-
+    /**
+     * @brief Créer la chaîne de caractères qui affiche les informations à afficher à chaque fin de tour.
+     * @return [String] : Chaîne de carctères des informations à afficher chaque tour.
+     */
     public String affiche(){
         StringBuilder s = new StringBuilder();
         s.append("NORD ");

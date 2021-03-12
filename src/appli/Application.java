@@ -4,6 +4,9 @@ import jeu.Partie;
 
 import java.util.Scanner;
 
+/**
+ * @brief Classe gérant l'éxécution de l'application.
+ */
 public class Application {
 
     public static void main(String[] args) {
