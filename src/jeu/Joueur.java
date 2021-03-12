@@ -63,25 +63,37 @@ public class Joueur {
             return false;
         }
         int cpt = 0;
-        boolean coupEnnemi = false;
+        ArrayList<Integer> coupNonJouable = new ArrayList<>();
         for(int carte : this.deck.getMain()){
-            if(!coupEnnemi){
-                if(carte > descEnnemi && carte < ascEnnemi){
-                    coupEnnemi = true;
-                    cpt++;
-                    continue;
-                }
-            }
+
             if(carte < this.base.getTopPileDesc() || carte - 10 == this.base.getTopPileDesc() || carte > this.base.getTopPileAsc() || carte + 10 == this.base.getTopPileAsc())
                 cpt++;
-            if(cpt>=2){
-                //System.out.println("PEUT JOUER");
-                return true;
+            else
+                coupNonJouable.add(carte);
+        }
+
+        if(cpt>=2)
+            return true;
+
+        cpt+=checkCartesNonJouables(coupNonJouable, ascEnnemi, descEnnemi);
+
+        if(cpt>=2) {
+            //System.out.println("PEUT JOUER");
+            return true;
+        }
+        else {
+            System.out.println("Erreur 10: Pas assez de cartes jouables. Nombre de cartes jouables : " + cpt);
+            return false;
+        }
+    }
+
+    private int checkCartesNonJouables(ArrayList<Integer> coupNonJouable, int ascEnnemi, int descEnnemi){
+        for(int carte : coupNonJouable){
+            if(carte > descEnnemi || carte < ascEnnemi){
+                return 1;
             }
         }
-        //return !(this.cartes.piocheVide() && this.cartes.mainVide() == 0) && this.cartes.oneCarteInHandAndZeroInPioche();
-        System.out.println("Erreur 10: Pas assez de cartes jouables. Nombre de cartes jouables : " + cpt);
-        return false;
+        return 0;
     }
 
     @Override

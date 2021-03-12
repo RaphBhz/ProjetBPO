@@ -22,7 +22,7 @@ public class DeckTest {
 
         Deck deck = new Deck();
 
-        assertFalse(deck.isCarteInMain(deck.getMain()[1]+1));
+        assertFalse(deck.isCarteInMain(deck.getMain()[0]-1));
 
     }
 

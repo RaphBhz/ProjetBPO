@@ -30,6 +30,7 @@ public class Deck {
         for (int i = 0; i< MAX_MAIN; i++){
             cartesEnMain[i]=cartesPioche.pop();
         }
+        Arrays.sort(cartesEnMain);
     }
 
     /**
@@ -100,8 +101,8 @@ public class Deck {
             }
             if (carteSurEnnemi == -1 && nbCartesAdded == 2)
                 break;
-
         }
+        Arrays.sort(cartesEnMain);
         return nbCartesAdded;
     }
 
@@ -148,7 +149,7 @@ public class Deck {
      */
     public String afficheMain(){
         StringBuilder s = new StringBuilder();
-        Arrays.sort(cartesEnMain);
+        //Arrays.sort(cartesEnMain);
         for(int carte : cartesEnMain){
             if(carte != -1){
                 if(carte<10)
